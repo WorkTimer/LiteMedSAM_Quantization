@@ -1,6 +1,7 @@
 from os import listdir, makedirs
 from os.path import join, isfile, basename
 from glob import glob
+import PIL
 from tqdm import tqdm
 from time import time
 import numpy as np
@@ -368,10 +369,11 @@ medsam_lite_model = MedSAM_Lite(
 lite_medsam_checkpoint = torch.load(lite_medsam_checkpoint_path, map_location='cpu')
 medsam_lite_model.load_state_dict(lite_medsam_checkpoint)
 
+if device.type == "cpu":
 # https://pytorch.org/tutorials/recipes/quantization.html#post-training-dynamic-quantization
-medsam_lite_model = torch.quantization.quantize_dynamic(
-    medsam_lite_model, {torch.nn.Linear}, dtype=torch.qint8
-)
+    medsam_lite_model = torch.quantization.quantize_dynamic(
+        medsam_lite_model, {torch.nn.Linear}, dtype=torch.qint8
+    )
 
 medsam_lite_model.to(device)
 medsam_lite_model.eval()
@@ -381,6 +383,7 @@ def MedSAM_infer_npz_2D(img_npz_file):
     npz_data = np.load(img_npz_file, 'r', allow_pickle=True) # (H, W, 3)
     img_3c = npz_data['imgs'] # (H, W, 3)
     assert np.max(img_3c)<256, f'input data should be in range [0, 255], but got {np.unique(img_3c)}'
+    # PIL.Image.fromarray(img_3c.astype('uint8'), 'RGB').save(join(png_save_dir, 'org_' +npz_name.split(".")[0] + '.png'))
     H, W = img_3c.shape[:2]
     boxes = npz_data['boxes']
     segs = np.zeros(img_3c.shape[:2], dtype=np.uint8)
