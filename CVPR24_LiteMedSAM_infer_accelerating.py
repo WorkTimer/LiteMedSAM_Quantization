@@ -461,7 +461,7 @@ def MedSAM_infer_npz_3D(img_npz_file):
 
         # infer from middle slice to the z_max
         print(npz_name, 'infer from middle slice to the z_max')
-        for z in tqdm(range(z_middle, z_max), disable=True):
+        for z in tqdm(range(z_middle, z_max)):
             img_2d = img_3D[z, :, :]
             if len(img_2d.shape) == 2:
                 img_3c = np.repeat(img_2d[:, :, None], 3, axis=-1)
@@ -498,7 +498,7 @@ def MedSAM_infer_npz_3D(img_npz_file):
 
         # infer from middle slice to the z_max
         print(npz_name, 'infer from middle slice to the z_min')
-        for z in tqdm(range(z_middle-1, z_min, -1), disable=True):
+        for z in tqdm(range(z_middle-1, z_min, -1)):
             img_2d = img_3D[z, :, :]
             if len(img_2d.shape) == 2:
                 img_3c = np.repeat(img_2d[:, :, None], 3, axis=-1)
@@ -565,7 +565,7 @@ if __name__ == '__main__':
     efficiency = OrderedDict()
     efficiency['case'] = []
     efficiency['time'] = []
-    for img_npz_file in tqdm(img_npz_files, disable=True):
+    for img_npz_file in tqdm(img_npz_files):
         start_time = time()
         if basename(img_npz_file).startswith('3D'):
             MedSAM_infer_npz_3D(img_npz_file)
