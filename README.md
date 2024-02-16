@@ -3,7 +3,7 @@
 LiteMedSAM Quantization is an optimized version based on the original MedSAM library. The original repository can be found here: [MedSAM GitHub Repository](https://github.com/bowang-lab/MedSAM/). The quantized version of LiteMedSAM has been deployed as a WEB application, accessible at: LiteMedSAM WEB Application: https://medsam.senma.xyz/. This application allows users to upload two-dimensional medical imaging pictures (in PNG, JPG, JPEG formats) and process them using the quantized version of LiteMedSAM for image segmentation masking.
 
 
-https://github.com/WorkTimer/LiteMedSAM_Quantization/assets/310379/11559c66-ed0b-4b59-8ef4-9e1218c4eae8
+https://github.com/WorkTimer/LiteMedSAM_Quantization/assets/310379/e2b89e1b-34ad-4295-86a8-6c75f5e2d5be
 
 
 ## Installation Guide
