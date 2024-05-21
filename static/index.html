@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Mamba Image Upload</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="container mx-auto">
+        <div class="bg-white p-6 rounded shadow-lg">
+            <h1 class="text-xl font-bold mb-4">U-Mamba Image Upload for Academic Research</h1>
+            <p class="mb-4">Please select a medical imaging file (nii.gz) to upload and analyze using our U-Mamba segmentation model. This service is for academic research only.</p>
+
+            <!-- File Input -->
+            <input type="file" id="fileInput" class="mb-2">
+            <div id="fileName" class="mb-4"></div>
+
+            <!-- Modality Selection -->
+            <label class="block mb-2">Select Modality:</label>
+            <div class="mb-4">
+                <label class="inline-flex items-center">
+                    <input type="radio" name="modality" value="CT" class="form-radio">
+                    <span class="ml-2">CT</span>
+                </label>
+                <label class="inline-flex items-center ml-4">
+                    <input type="radio" name="modality" value="MR" class="form-radio">
+                    <span class="ml-2">MR</span>
+                </label>
+                <label class="inline-flex items-center ml-4">
+                    <input type="radio" name="modality" value="PET" class="form-radio">
+                    <span class="ml-2">PET</span>
+                </label>
+                <label class="inline-flex items-center ml-4">
+                    <input type="radio" name="modality" value="Ultrasound" class="form-radio">
+                    <span class="ml-2">Ultrasound</span>
+                </label>
+                <label class="inline-flex items-center ml-4">
+                    <input type="radio" name="modality" value="X-Ray" class="form-radio">
+                    <span class="ml-2">X-Ray</span>
+                </label>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+                <p><strong>Disclaimer:</strong> This tool is provided for academic research purposes only. By using this service, you agree that you have anonymized all uploaded data and accept no liability for any legal issues that may arise from the use of the uploaded data.</p>
+                <label class="inline-flex items-center mt-2">
+                    <input type="checkbox" id="acceptDisclaimer" class="form-checkbox">
+                    <span class="ml-2">I accept the terms and conditions.</span>
+                </label>
+            </div>
+
+            <!-- Upload Button -->
+            <button id="uploadBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded opacity-50 cursor-not-allowed" disabled>Upload</button>
+            <div id="uploadStatus" class="mt-4"></div>
+            <div id="viewLinkContainer" class="mt-2"></div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileName = document.getElementById('fileName');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const acceptDisclaimer = document.getElementById('acceptDisclaimer');
+        let selectedModality = null;
+
+        // Enable the upload button only if all conditions are met
+        function updateUploadButtonState() {
+            uploadBtn.disabled = !fileInput.files.length || !selectedModality || !acceptDisclaimer.checked;
+            uploadBtn.className = uploadBtn.disabled ? 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded opacity-50 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded';
+        }
+
+        function resetForm() {
+            // Reset file input
+            fileInput.value = '';
+            fileName.textContent = '';
+            // Uncheck all radio buttons
+            document.querySelectorAll('input[name="modality"]').forEach(radio => {
+                radio.checked = false;
+            });
+            selectedModality = null;
+            // Uncheck the disclaimer checkbox
+            acceptDisclaimer.checked = false;
+            // Reset upload button
+            updateUploadButtonState();
+        }
+
+        // Display selected file name
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                fileName.textContent = `Selected file: ${fileInput.files[0].name}`;
+            } else {
+                fileName.textContent = '';
+            }
+            updateUploadButtonState();
+        });
+
+        // Modality selection handling
+        document.querySelectorAll('input[name="modality"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    selectedModality = this.value;
+                    updateUploadButtonState();
+                }
+            });
+        });
+
+        // Accept disclaimer handling
+        acceptDisclaimer.addEventListener('change', updateUploadButtonState);
+
+        // Upload file to the server
+        uploadBtn.addEventListener('click', function() {
+            if (fileInput.files.length === 0 || !selectedModality || !acceptDisclaimer.checked) {
+                uploadStatus.textContent = 'Please select a file and modality before uploading and accept the disclaimer.';
+                return;
+            }
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0], fileInput.files[0].name);
+            formData.append('modality', selectedModality);
+
+            uploadStatus.textContent = 'Uploading...';
+            fetch(`http://127.0.0.1:8800/api/upload?modality=${selectedModality}`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                uploadStatus.textContent = 'Upload successful!';
+                const viewerLink = `http://localhost:3000/U-Mamba?StudyInstanceUIDs=${data.StudyInstanceUID}`;
+                const viewLinkContainer = document.getElementById('viewLinkContainer');
+                viewLinkContainer.innerHTML = `<a href="${viewerLink}" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">View in OHIF Viewer</a>`;
+            })
+            .catch(error => {
+                error.json().then(err => {
+                    uploadStatus.textContent = 'Upload failed: ' + err.message;
+                }).catch(() => {
+                    uploadStatus.textContent = 'Upload failed. Please try again.';
+                });
+            })
+            .finally(() => {
+                resetForm();  
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload'; 
+            });
+        });
+    </script>
+</body>
+</html>

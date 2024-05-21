@@ -4,7 +4,7 @@ import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image
 import io
-import api
+import sl_api
 
 operation_tips = """
         <div style="font-size: 1.1em; line-height: 1.6em;">
@@ -80,5 +80,5 @@ if uploaded_file is not None:
         shapes = canvas_result.json_data["objects"]  # Get all drawn shapes
         if shapes:  # If there are drawn rectangles
             rect_coords = shapes[-1]["left"], shapes[-1]["top"], shapes[-1]["left"] + shapes[-1]["width"], shapes[-1]["top"] + shapes[-1]["height"]
-            output_image_bytesio = api.blend_segment_with_original(image_cv2, rect_coords)
+            output_image_bytesio = sl_api.blend_segment_with_original(image_cv2, rect_coords)
             st.image(output_image_bytesio)

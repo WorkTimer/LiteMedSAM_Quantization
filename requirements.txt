@@ -1,0 +1,18 @@
+# causal-conv1d==1.1.1
+# mamba-ssm==1.1.4
+# torch==2.0.1 
+# torchvision==0.15.2
+SimpleITK>=2.2.1
+fastapi
+python-dotenv
+# uvicorn
+uvicorn[standard]
+dicomweb-client
+requests_toolbelt
+toml
+aiofiles
+jsonschema
+python-multipart
+httpx
+# pyplastimatch
+
