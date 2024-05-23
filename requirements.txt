@@ -9,6 +9,8 @@ python-dotenv
 uvicorn[standard]
 dicomweb-client
 requests_toolbelt
+opencv-python
+timm
 toml
 aiofiles
 jsonschema
