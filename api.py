@@ -44,6 +44,7 @@ lite_medsam_checkpoint_path = 'lite_medsam.pth'
 
 with open('config.toml', 'r') as config_file:
     config = toml.load(config_file)
+    app_settings = config.get('app_settings', {})
 
 api_app = FastAPI(docs_url="/docs", openapi_url="/openapi.json")
 origins = [
@@ -73,27 +74,6 @@ def get_mime_type(file):
         m_type = m_type[0]
     logger.debug(f"Final Mime Type: {m_type}")
     return m_type
-
-# def get_predictor(model_path):
-#     predictor = nnUNetPredictor(
-#         tile_step_size=0.5,
-#         use_gaussian=True,
-#         use_mirroring = False,
-#         perform_everything_on_device = True,
-#         device = torch.device('cuda', 0),
-#         verbose = False,
-#         verbose_preprocessing = False,
-#         allow_tqdm = True
-#     )
-#     predictor.initialize_from_trained_model_folder(
-#         model_path,
-#         use_folds="all",
-#         checkpoint_name='checkpoint_final.pth',
-#     )
-#     return predictor
-# model_path = "models/abdomenCT/UMambaBot"
-# predictor = get_predictor(model_path)
-
 
 @router.get("/info/")
 async def get_info():
@@ -367,7 +347,7 @@ class InferenceRequest(BaseModel):
 
 @router.post("/infer/{model_id}")
 async def infer(model_id: str, request: InferenceRequest, image: str = '1.2.826.0.1.3680043.10.1398.347439963527678441841885180737383925'):
-    nifti_dir = "temp/nifti/"
+    nifti_dir = app_settings.get('nifti_dir', 'temp/nifti/')
     os.makedirs(nifti_dir, exist_ok=True)
     image_nii_gz = os.path.join(f"{nifti_dir}", f"{image}.nii.gz")
     if not os.path.exists(image_nii_gz):
@@ -448,9 +428,9 @@ async def infer(model_id: str, request: InferenceRequest, image: str = '1.2.826.
     res_json = {"labels": {"background": 0, **{f"label_{i}": int(value) for i, value in enumerate(np.unique(seg[seg != 0]), start=1)}}}
     # with tempfile.TemporaryDirectory() as tmpdirname:
     #     seg_dir = os.path.join(tmpdirname, 'seg')
-    seg_dir = f"temp/seg"
-    os.makedirs(seg_dir, exist_ok=True)
-    seg_nii_gz = os.path.join(f"{seg_dir}", f"2d_{image}_seg.nii.gz")
+    seg_2d_dir = app_settings.get('seg_2d_dir', 'temp/seg_2d/')
+    os.makedirs(seg_2d_dir, exist_ok=True)
+    seg_nii_gz = os.path.join(f"{seg_2d_dir}", f"2d_{image}_seg.nii.gz")
     # seg_nii_gz = os.path.join(f"{seg_dir}", f"{image}_seg.nrrd")
     seg = seg.astype("uint16")
     seg_sitk = SimpleITK.GetImageFromArray(seg) # seg is numpy array

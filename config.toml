@@ -1,2 +1,5 @@
 [app_settings]
 info = "Some general app settings"
+nifti_dir = './temp/nifti'
+seg_dir = './temp/seg'
+seg_2d_dir = './temp/seg_2d'
