@@ -346,7 +346,10 @@ class InferenceRequest(BaseModel):
     boxes: Optional[List[List[List[float]]]] = None
 
 @router.post("/infer/{model_id}")
-async def infer(model_id: str, request: InferenceRequest, image: str = '1.2.826.0.1.3680043.10.1398.347439963527678441841885180737383925'):
+async def infer(model_id: str, 
+                image: str = '1.2.826.0.1.3680043.10.1398.347439963527678441841885180737383925',
+                params: str = Form("{}"),
+                ):
     nifti_dir = app_settings.get('nifti_dir', 'temp/nifti/')
     os.makedirs(nifti_dir, exist_ok=True)
     image_nii_gz = os.path.join(f"{nifti_dir}", f"{image}.nii.gz")
@@ -401,7 +404,8 @@ async def infer(model_id: str, request: InferenceRequest, image: str = '1.2.826.
     # sitk_image = SimpleITK.ReadImage(image_nii_gz)
     # image_arrays = SimpleITK.GetArrayFromImage(sitk_image)
     seg = np.zeros_like(image_arrays, dtype=np.uint8)
-    boxes = request.boxes
+    params = json.loads(params) if params else {}
+    boxes = params['boxes']
     for idx, box in enumerate(boxes, start=1):
         plane_rgb, box, fixed_axis, fixed_value = extract_entire_plane(image_arrays, box)
         H, W, _ = plane_rgb.shape

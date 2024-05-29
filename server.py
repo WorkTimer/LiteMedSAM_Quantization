@@ -12,5 +12,5 @@ async def root():
 app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 
 
-app.mount("/api", api_app)
+app.mount("/api/medsam", api_app)
 
