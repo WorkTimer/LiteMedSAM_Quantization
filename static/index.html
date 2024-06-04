@@ -123,7 +123,7 @@
             formData.append('modality', selectedModality);
 
             uploadStatus.textContent = 'Uploading...';
-            fetch(`http://127.0.0.1:8800/api/upload?modality=${selectedModality}`, {
+            fetch(`http://127.0.0.1:8800/api/medsam/upload?modality=${selectedModality}`, {
                 method: 'POST',
                 body: formData,
             })

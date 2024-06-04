@@ -455,6 +455,8 @@ async def infer(model_id: str,
         return res_json
 
     return_message = MultipartEncoder(fields=res_fields)
+    command = ['sudo', 'setfacl', '-R', '-d', '-m', 'u:1001000:rwx', '/home/scchat/lxd_dir']
+    subprocess.call(command)
     return Response(content=return_message.to_string(), media_type=return_message.content_type)
   
 @router.post("/upload",)

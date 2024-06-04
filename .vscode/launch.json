@@ -1,0 +1,45 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "server:app",
+                // "--host",
+                // "0.0.0.0",
+                "--port",
+                "8801",
+                // "--workers",
+                // "4",
+                // "--reload"
+            ],
+            "env": {
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python file",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}",
+            // "preLaunchTask": "Activate Conda Env",
+        },
+        {
+            "name": "Python: Streamlit",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/home/scchat/miniconda3/envs/medsam/bin/streamlit",
+            "args": [
+                "run",
+                "${workspaceFolder}/app_streamlit.py",
+                "--server.port=8501"
+                ],
+            // "preLaunchTask": "Activate Conda Env",
+        },
+    ]
+}

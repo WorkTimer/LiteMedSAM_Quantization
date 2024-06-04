@@ -1,0 +1,42 @@
+MedSAM model size: 39165200 bytes (38247.27 KB)
+2DBox_CXR_demo.npz, box: [ 84  55 203 193], predicted iou: 0.9303
+2DBox_Dermoscopy_demo.npz, box: [124 244 815 843], predicted iou: 0.959
+2DBox_Endoscopy_demo.npz, box: [ 564  207 1879 1080], predicted iou: 0.9652
+2DBox_Fundus_demo.npz, box: [1150  978 1696 1516], predicted iou: 0.9566
+2DBox_Mammography_demo.npz, box: [ 131 1532  475 1895], predicted iou: 0.8332
+2DBox_Mammography_demo.npz, box: [ 701 1952  816 2096], predicted iou: 0.8386
+2DBox_Mammography_demo.npz, box: [ 982 1991 1088 2139], predicted iou: 0.8355
+2DBox_Mammography_demo.npz, box: [ 431 2075  594 2238], predicted iou: 0.7594
+2DBox_Microscope_demo.npz, box: [  0  97  66 236], predicted iou: 0.9024
+2DBox_Microscope_demo.npz, box: [  0 267  84 386], predicted iou: 0.9121
+2DBox_Microscope_demo.npz, box: [  0 387  34 522], predicted iou: 0.8256
+2DBox_Microscope_demo.npz, box: [ 29 407 133 522], predicted iou: 0.9182
+2DBox_Microscope_demo.npz, box: [ 63   0 223 181], predicted iou: 0.9267
+2DBox_Microscope_demo.npz, box: [ 89 204 232 325], predicted iou: 0.8996
+2DBox_Microscope_demo.npz, box: [112 310 244 441], predicted iou: 0.9102
+2DBox_Microscope_demo.npz, box: [122 456 244 522], predicted iou: 0.8763
+2DBox_Microscope_demo.npz, box: [247 363 384 487], predicted iou: 0.9319
+2DBox_Microscope_demo.npz, box: [247 108 404 245], predicted iou: 0.9148
+2DBox_Microscope_demo.npz, box: [251 498 371 522], predicted iou: 0.7983
+2DBox_Microscope_demo.npz, box: [268   0 391  95], predicted iou: 0.9314
+2DBox_Microscope_demo.npz, box: [297 240 425 362], predicted iou: 0.9217
+2DBox_Microscope_demo.npz, box: [381 293 502 435], predicted iou: 0.9115
+2DBox_Microscope_demo.npz, box: [418   0 552 129], predicted iou: 0.9329
+2DBox_Microscope_demo.npz, box: [431 153 565 281], predicted iou: 0.9098
+2DBox_Microscope_demo.npz, box: [493 299 625 443], predicted iou: 0.8909
+2DBox_Microscope_demo.npz, box: [564   0 703 142], predicted iou: 0.927
+2DBox_Microscope_demo.npz, box: [590 190 723 318], predicted iou: 0.9168
+2DBox_Microscope_demo.npz, box: [608 439 754 522], predicted iou: 0.9139
+2DBox_Microscope_demo.npz, box: [667 298 775 424], predicted iou: 0.9038
+2DBox_Microscope_demo.npz, box: [694  82 775 190], predicted iou: 0.8812
+2DBox_OCT_demo.npz, box: [333 113 350 180], predicted iou: 0.8031
+2DBox_OCT_demo.npz, box: [370 110 389 173], predicted iou: 0.8028
+2DBox_OCT_demo.npz, box: [351 115 370 170], predicted iou: 0.8264
+2DBox_OCT_demo.npz, box: [275 119 330 216], predicted iou: 0.9126
+2DBox_US_demo.npz, box: [265  78 347 196], predicted iou: 0.8367
+3DBox_CT_demo.npz infer from middle slice to the z_max
+3DBox_CT_demo.npz infer from middle slice to the z_min
+3DBox_CT_demo.npz infer from middle slice to the z_max
+3DBox_CT_demo.npz infer from middle slice to the z_min
+3DBox_MR_demo.npz infer from middle slice to the z_max
+3DBox_MR_demo.npz infer from middle slice to the z_min
