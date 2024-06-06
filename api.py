@@ -405,29 +405,32 @@ async def infer(model_id: str,
     # image_arrays = SimpleITK.GetArrayFromImage(sitk_image)
     seg = np.zeros_like(image_arrays, dtype=np.uint8)
     params = json.loads(params) if params else {}
-    boxes = params['boxes']
-    for idx, box in enumerate(boxes, start=1):
-        plane_rgb, box, fixed_axis, fixed_value = extract_entire_plane(image_arrays, box)
-        H, W, _ = plane_rgb.shape
-        img_256 = resize_longest_side(plane_rgb, 256)
-        newh, neww = img_256.shape[:2]
-        img_256_norm = (img_256 - img_256.min()) / np.clip(
-            img_256.max() - img_256.min(), a_min=1e-8, a_max=None
-        )
-        img_256_padded = pad_image(img_256_norm, 256)
-        img_256_tensor = torch.tensor(img_256_padded).float().permute(2, 0, 1).unsqueeze(0).to(device)
-        with torch.no_grad():
-            image_embedding = medsam_lite_model.image_encoder(img_256_tensor)
-        box256 = resize_box_to_256(box, original_size=(H, W))
-        box256 = box256[None, ...] # (1, 4)
-        sam_mask, iou_pred = medsam_inference(medsam_lite_model, image_embedding, box256,  (newh, neww), (H, W))
-        print(f'box: {box}, predicted iou: {np.round(iou_pred.item(), 4)}')
-        if fixed_axis == "z":
-            seg[fixed_value, :, :][sam_mask > 0] = idx
-        elif fixed_axis == "y":
-            seg[:, fixed_value, :][sam_mask > 0] = idx
-        elif fixed_axis == "x":
-            seg[:, :, fixed_value][sam_mask > 0] = idx
+    segments = params['segments']
+    for i, segment in enumerate(segments, start=1):
+        segmentIndex = segment['segmentIndex']
+        boxes = segment['boxes']
+        for idx, box in enumerate(boxes, start=1):
+            plane_rgb, box, fixed_axis, fixed_value = extract_entire_plane(image_arrays, box)
+            H, W, _ = plane_rgb.shape
+            img_256 = resize_longest_side(plane_rgb, 256)
+            newh, neww = img_256.shape[:2]
+            img_256_norm = (img_256 - img_256.min()) / np.clip(
+                img_256.max() - img_256.min(), a_min=1e-8, a_max=None
+            )
+            img_256_padded = pad_image(img_256_norm, 256)
+            img_256_tensor = torch.tensor(img_256_padded).float().permute(2, 0, 1).unsqueeze(0).to(device)
+            with torch.no_grad():
+                image_embedding = medsam_lite_model.image_encoder(img_256_tensor)
+            box256 = resize_box_to_256(box, original_size=(H, W))
+            box256 = box256[None, ...] # (1, 4)
+            sam_mask, iou_pred = medsam_inference(medsam_lite_model, image_embedding, box256,  (newh, neww), (H, W))
+            print(f'box: {box}, predicted iou: {np.round(iou_pred.item(), 4)}')
+            if fixed_axis == "z":
+                seg[fixed_value, :, :][sam_mask > 0] = segmentIndex
+            elif fixed_axis == "y":
+                seg[:, fixed_value, :][sam_mask > 0] = segmentIndex
+            elif fixed_axis == "x":
+                seg[:, :, fixed_value][sam_mask > 0] = segmentIndex
 
     res_json = {"labels": {"background": 0, **{f"label_{i}": int(value) for i, value in enumerate(np.unique(seg[seg != 0]), start=1)}}}
     # with tempfile.TemporaryDirectory() as tmpdirname:
