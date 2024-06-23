@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  medsam:
+    init: true
+    restart: "always"
+    container_name: medsam
+    image: nvidia/cuda:12.5.0-base-ubuntu22.04
+    command: "/usr/bin/bash"
+    stdin_open: true
+    tty: true
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+
+#   celery_worker_gpu:
+#     extra_hosts:
+#       - "host.docker.internal:host-gateway"
+#     init: true
+#     restart: "always"
+#     container_name: celery_worker
+#     image: docker.io/worktimer/scchat:0.0.20-gpu
+#     command: ["celery", "-A", "celery_tasks.celery", "worker", "-l", "info", "-c", "6", "-E", "-n", "worker1@wanglab-a2"]
+#     logging:
+#       driver: "json-file"
+#       options:
+#         max-size: "10m"
+#         max-file: "2"
+#     environment:
+#       BEARER_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNzExNDIxNTYwfQ.8qD1KwanWVaqy46tkL4R4OW4wwb_nd1ALylN-NQfKqA"
+#       JWT_SECRET: "bd4e8bbd26a6b7334b4d09302401027c86fbe1148ea539eaa94f66d74ad62045"
+#       # MONGO_URL: "mongodb://172.17.0.1:27017"
+#       # REDIS_URL: "redis://172.17.0.1:6379"
+#       # CELERY_BROKER: "redis://172.17.0.1:6379/0"
+#       # CELERY_BACKEND": "redis://172.17.0.1:6379/1"
+#       MONGO_URL: "mongodb://10.1.0.1:27017"
+#       REDIS_URL: "redis://10.1.0.3:6379"
+#       CELERY_BROKER: "redis://10.1.0.3:6379/0"
+#       CELERY_BACKEND": "redis://10.1.0.3:6379/1"
+#       AZURE_CONTAINER_NAME: "adata"
+#       NVIDIA_VISIBLE_DEVICES: "1"
+#     deploy:
+#       resources:
+#         reservations:
+#           devices:
+#             - driver: nvidia
+#               capabilities: [gpu]
+
+  # cuda12:
+  #   image: nvidia/cuda:12.5.0-devel-ubuntu22.04
+  #   command: "/usr/bin/bash"
+  #   stdin_open: true
+  #   tty: true
+  #   environment:
+  #     - NVIDIA_VISIBLE_DEVICES=all
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             capabilities: [gpu]
