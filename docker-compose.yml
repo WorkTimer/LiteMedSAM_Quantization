@@ -5,10 +5,15 @@ services:
     init: true
     restart: "always"
     container_name: medsam
-    image: nvidia/cuda:12.5.0-base-ubuntu22.04
+    image: worktimer/medsam:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile_medsam
     command: "/usr/bin/bash"
     stdin_open: true
     tty: true
+    volumes:
+      - ./:/app/src:ro
     environment:
       - NVIDIA_VISIBLE_DEVICES=1
     deploy:

@@ -123,14 +123,14 @@
             formData.append('modality', selectedModality);
 
             uploadStatus.textContent = 'Uploading...';
-            fetch(`http://127.0.0.1:8800/api/medsam/upload?modality=${selectedModality}`, {
+            fetch(`/api/medsam/upload?modality=${selectedModality}`, {
                 method: 'POST',
                 body: formData,
             })
             .then(response => response.json())
             .then(data => {
                 uploadStatus.textContent = 'Upload successful!';
-                const viewerLink = `http://localhost:3000/U-Mamba?StudyInstanceUIDs=${data.StudyInstanceUID}`;
+                const viewerLink = `/MedVerse?StudyInstanceUIDs=${data.StudyInstanceUID}`;
                 const viewLinkContainer = document.getElementById('viewLinkContainer');
                 viewLinkContainer.innerHTML = `<a href="${viewerLink}" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">View in OHIF Viewer</a>`;
             })
