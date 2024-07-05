@@ -477,12 +477,34 @@ async def upload(
             current_time = datetime.now().strftime("%Y%m%d%H%M%S")
             unique_id = uuid.uuid4().hex
             filename = f"{current_time}_{unique_id}_{file.filename}"
+            original_upload_dir = os.path.join(tmpdirname, 'original_upload')
+            os.makedirs(original_upload_dir, exist_ok=True)
+            original_save_path = f'{original_upload_dir}/{filename}'
+            with open(original_save_path, 'wb') as out_file:
+                content = await file.read()
+                out_file.write(content)
+            original_nii_img = nibabel.load(original_save_path)
+            print(f"Original Upload Image shape: {original_nii_img.shape}")
+            print(f"Original Upload Image affine: {original_nii_img.affine}")
+
             upload_dir = os.path.join(tmpdirname, 'upload')
             os.makedirs(upload_dir, exist_ok=True)
             save_path = f'{upload_dir}/{filename}'
-            with open(save_path, 'wb') as out_file:
-                content = await file.read()
-                out_file.write(content)
+            canonical_nii_img = nibabel.as_closest_canonical(original_nii_img)
+            nii_img_data = canonical_nii_img.get_fdata()
+            new_affine = np.zeros_like(canonical_nii_img.affine)
+            np.fill_diagonal(new_affine, np.diagonal(canonical_nii_img.affine))
+            new_affine[-1, :] = canonical_nii_img.affine[-1, :]
+            new_affine[:, -1] = canonical_nii_img.affine[:, -1]
+            img_clean_nii = nibabel.Nifti1Image(nii_img_data, new_affine, canonical_nii_img.header)
+            nibabel.save(img_clean_nii, save_path)
+
+            print(f"Canonical Upload Image shape: {canonical_nii_img.shape}")
+            print(f"Canonical Upload Image affine: {canonical_nii_img.affine}")
+            
+            print(f"Clean Upload Image shape: {img_clean_nii.shape}")
+            print(f"Clean Upload Image affine: {img_clean_nii.affine}")
+
             dicom_output_dir = os.path.join(tmpdirname, 'dicom_output')
             os.makedirs(dicom_output_dir, exist_ok=True)
             # plastimatch convert --patient-id patient1 --input Task09_Spleen/imagesTs/spleen_1.nii.gz --modality CT --output-dicom dicom_output
@@ -526,6 +548,9 @@ async def upload(
                     dicom_file.FrameOfReferenceUID = frame_of_reference_uid
                     dicom_file.file_meta.MediaStorageSOPInstanceUID = base_uid[:-(length_file_count)] + f"{random_number + 6 + 2 * index:0{length_file_count}d}"
                     dicom_file.SOPInstanceUID = base_uid[:-(length_file_count)] + f"{random_number + 6 + 2 * index:0{length_file_count}d}"
+                    # dicom_file.ImageOrientationPatient = [1,0,0,0,1,0]
+                    dicom_file.Manufacturer = ''
+                    dicom_file.ManufacturerModelName = ''
                     dicom_file.save_as(file_path)
                     zipf.write(file_path, os.path.relpath(file_path, dicom_output_dir))
             print("base_uid\t\t\t", base_uid)
@@ -554,7 +579,7 @@ async def upload(
                     # if not all(item['Status'] == 'Success' for item in response_data):
                         raise HTTPException(status_code=response.status_code, detail="Failed to upload file")
                     new_filename = f'{return_content["SeriesInstanceUID"]}.nii.gz'
-                    nifti_dir = "temp/nifti/"
+                    nifti_dir = app_settings.get('nifti_dir', 'temp/nifti/')
                     os.makedirs(nifti_dir, exist_ok=True)
                     new_save_path = os.path.join(nifti_dir, new_filename)                    
                     # os.rename(save_path, new_save_path)
