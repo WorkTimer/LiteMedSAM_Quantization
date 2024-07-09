@@ -1,0 +1,13 @@
+FROM python:3.10
+
+WORKDIR /app
+
+COPY requirements_clear.txt .
+RUN pip install --upgrade pip
+RUN pip install -r requirements_clear.txt
+
+# COPY config.toml .
+COPY celery_app.py .
+COPY tasks.py .
+
+

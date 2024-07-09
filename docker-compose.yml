@@ -23,6 +23,31 @@ services:
             - driver: nvidia
               capabilities: [gpu]
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  celery_worker:
+    build: 
+      context: .
+      dockerfile: Dockerfile.celery
+    command: celery -A celery_app worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+
+  celery_beat:
+    build: 
+      context: .
+      dockerfile: Dockerfile.celery
+    command: celery -A celery_app beat --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+  
 #   celery_worker_gpu:
 #     extra_hosts:
 #       - "host.docker.internal:host-gateway"
