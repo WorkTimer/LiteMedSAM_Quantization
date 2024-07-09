@@ -6,8 +6,8 @@ seg_2d_dir = '/home/scchat/lxd_dir/ubuntu/u-mamba_3dslicer/temp/seg_2d'
 
 [celery]
 broker_url = "redis://redis:6379/0"
-# schedule_cron = "0 1 * * *"
-schedule_cron = "* * * * *"
+schedule_cron = "0 1 * * *"
+# schedule_cron = "* * * * *"
 
 [cleanup_settings]
 base_url = "http://10.1.0.2:8042"
